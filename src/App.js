@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Button from './Button'; // Import a component from another file
 import './App.css';
 
 const list = [
@@ -25,16 +26,28 @@ function isSearched(searchTerm) {
   }
 }
 
+// API KEY: APPID=f8384513fad5f91ea04d07a2cbf916ec
+const API = "http://api.openweathermap.org/data/2.5/weather?q=stockholm,se&APPID=f8384513fad5f91ea04d07a2cbf916ec&units=metric";
+
+
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       list,
       searchTerm: '',
-      isItFriday: true
+      isItFriday: true,
+      weather: ''
     };
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+  }
+  componentDidMount() {
+    console.log("CDM ran")
+    fetch(API)
+      .then(response => response.json())
+      .then(data => this.setState({ weather: data.main.feels_like }));
   }
   onSearchChange(event) {
     this.setState({ searchTerm: event.target.value });
@@ -47,9 +60,10 @@ class App extends Component {
   }
 
   render() {
-    const { searchTerm, list } = this.state;
+    const { searchTerm, list, weather } = this.state;
     return (
       <div className="App" >
+        The temperature right now feels like {weather || '?'}
         <Search
           value={searchTerm}
           onChange={this.onSearchChange}
@@ -110,7 +124,7 @@ class Table extends Component {
   }
 }
 //TODO: Refactor
-class Button extends Component {
+/* class Button extends Component {
   render() {
     const { onClick, className = '', children,
     } = this.props;
@@ -121,5 +135,5 @@ class Button extends Component {
     >{children}
     </button>);
   }
-}
+} */
 export default App;
