@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import styled from 'styled-components';
 
 const list = [
   {
@@ -49,12 +50,14 @@ class App extends Component {
   render() {
     const { searchTerm, list } = this.state;
     return (
-      <div className="App" >
-        <Search
-          value={searchTerm}
-          onChange={this.onSearchChange}
-        >Search
+      <div className="page">
+        <div className="interactions">
+          <Search
+            value={searchTerm}
+            onChange={this.onSearchChange}
+          >Search
           </Search>
+        </div>
         <Table
           list={list}
           pattern={searchTerm}
@@ -72,24 +75,29 @@ const Search = ({ value, onChange, children }) =>
       onChange={onChange}
     /> </form>
 
-
+const Span = styled.span`
+width: ${props => props.width || '10%'};
+`
 
 const Table = ({ list, pattern, onDismiss }) =>
-  <div>
+  <div className="table">
     {list.filter(isSearched(pattern)).map(item =>
-      <div key={item.objectID}>
-        <span>
+      <div key={item.objectID} className="table-row">
+        <Span width={'40%'}>
           <a href={item.url}>{item.title}</a>
-        </span>
-        <span>{item.author}</span>
-        <span>{item.num_comments}</span>
-        <span>{item.points}</span>
-        <span>
-          <Button onClick={() => onDismiss(item.objectID)}>
+        </Span>
+        <Span width={'30%'}>{item.author}</Span>
+        <Span>{item.num_comments}</Span>
+        <Span>{item.points}</Span>
+        <Span>
+          <Button
+            onClick={() => onDismiss(item.objectID)}
+            className="button-inline">
             Dismiss
               </Button>
-        </span>
-      </div>)}
+        </Span>
+      </div>
+    )}
   </div>
 
 const Button = ({ onClick, className = '', children }) =>
