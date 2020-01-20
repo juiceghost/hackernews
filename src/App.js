@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const DEFAULT_QUERY = 'redux';
 const DEFAULT_PAGE = 0;
-const DEFAULT_HPP = '10';
+const DEFAULT_HPP = '5';
 
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
@@ -26,17 +26,24 @@ class App extends Component {
       results: null,
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      isLoading: false,
     };
+    this.needsToSearchTopstories = this.needsToSearchTopstories.bind(this);
     this.setSearchTopstories = this.setSearchTopstories.bind(this);
     this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
   }
+  needsToSearchTopstories(searchTerm) {
+    return !this.state.results[searchTerm];
+  }
   onSearchSubmit(event) {
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm });
-    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
+    if (this.needsToSearchTopstories(searchTerm)) {
+      this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
+    }
     event.preventDefault();
   }
   setSearchTopstories(result) {
@@ -53,10 +60,12 @@ class App extends Component {
       results: {
         ...results,
         [searchKey]: { hits: updatedHits, page }
-      }
+      },
+      isLoading: false
     });
   }
   fetchSearchTopstories(searchTerm, page) {
+    this.setState({ isLoading: true });
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));
@@ -88,7 +97,8 @@ class App extends Component {
     const {
       searchTerm,
       results,
-      searchKey
+      searchKey,
+      isLoading
     } = this.state;
 
     const page = (
@@ -118,9 +128,13 @@ class App extends Component {
           onDismiss={this.onDismiss}
         />
         <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
-            More
-          </Button>
+          {isLoading
+            ? <Loading />
+            : <Button
+              onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}>
+              More
+            </Button>
+          }
         </div>
       </div>
     );
@@ -147,10 +161,32 @@ const Span = styled.span`
 width: ${props => props.width || '10%'};
 `
 
+/*
+& > span { overflow: hidden; text-overflow: ellipsis; padding: 0 5px;
+
+*/
+const StyledTable = styled.div`
+margin: 20px 0;
+`
+const StyledTableRow = styled.div`
+display: flex;
+line-height: 24px;
+white-space: nowrap;
+margin: 10px 0;
+padding: 10px;
+background: #ffffff;
+border: 1px solid #e3e3e3;
+ span {
+  overflow: hidden; 
+  text-overflow: 
+  ellipsis; 
+  padding: 0 5px;
+}
+`
 const Table = ({ list, onDismiss }) =>
-  <div className="table">
+  <StyledTable>
     {list.map(item =>
-      <div key={item.objectID} className="table-row">
+      <StyledTableRow key={item.objectID}>
         <Span width={'40%'}>
           <a href={item.url}>{item.title}</a>
         </Span>
@@ -164,9 +200,9 @@ const Table = ({ list, onDismiss }) =>
             Dismiss
               </Button>
         </Span>
-      </div>
+      </StyledTableRow>
     )}
-  </div>
+  </StyledTable>
 
 const Button = ({ onClick, className = '', children }) =>
   <button
@@ -175,4 +211,8 @@ const Button = ({ onClick, className = '', children }) =>
     type="button"
   >{children}
   </button>
+
+const Loading = () => <div>Loading ...</div>
+
+
 export default App;
