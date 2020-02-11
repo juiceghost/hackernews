@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import styled from 'styled-components';
 
+import Location from './Location';
+
 const DEFAULT_QUERY = 'redux';
 const DEFAULT_PAGE = 0;
 const DEFAULT_HPP = '5';
@@ -124,10 +126,10 @@ class App extends Component {
           >Search
           </Search>
         </div>
-        <Table
+        {/*         <Table
           list={list}
           onDismiss={this.onDismiss}
-        />
+        /> */}
         <div className="interactions">
           {isLoading
             ? <Loading />
@@ -136,6 +138,7 @@ class App extends Component {
               More
             </Button>
           }
+          <Location />
         </div>
       </div>
     );
