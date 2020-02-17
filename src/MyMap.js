@@ -23,7 +23,7 @@ const MyMap = (props) =>
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
         <Marker
-            key={1}
+            key={'hej'}
             position={[props.latitude, props.longitude]}
             icon={greenIcon} />
 

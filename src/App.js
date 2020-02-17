@@ -3,6 +3,7 @@ import './App.css';
 import styled from 'styled-components';
 
 import Location from './Location';
+import { getData, result as savedResult } from './savedData';
 
 const DEFAULT_QUERY = 'redux';
 const DEFAULT_PAGE = 0;
@@ -36,6 +37,8 @@ class App extends Component {
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+    this.savedResult = savedResult;
+    this.getData = getData.bind(this);
   }
   needsToSearchTopstories(searchTerm) {
     return !this.state.results[searchTerm];
@@ -68,9 +71,15 @@ class App extends Component {
   }
   fetchSearchTopstories(searchTerm, page) {
     this.setState({ isLoading: true });
+    this.setSearchTopstories(this.savedResult);
+    this.getData();
+    return;
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
-      .then(result => this.setSearchTopstories(result));
+      .then(result => {
+        console.log(result);
+        this.setSearchTopstories(result);
+      });
   }
   componentDidMount() {
     const { searchTerm } = this.state;

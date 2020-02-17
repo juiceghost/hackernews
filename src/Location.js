@@ -31,7 +31,7 @@ const markers = {
         {
             "type": "Feature",
             "properties": {
-                "PARK_ID": 1219,
+                "PARK_ID": 1220,
                 "NAME": "Korvmoj",
                 "DESCRIPTIO": "Plan C"
             },
